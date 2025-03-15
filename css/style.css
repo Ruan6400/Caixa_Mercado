@@ -1,0 +1,192 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+body>*:not(ul){
+    flex-basis: 100%;
+    text-align: center;
+}
+
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 1400px;
+    display: flex;
+    flex-direction: column;
+}
+
+h1 {
+    text-align: center;
+}
+
+.products, .cart, .barcode {
+    margin-bottom: 20px;
+}
+
+.product {
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 8px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+#checkout {
+    background-color: #007bff;
+}
+
+#checkout:hover {
+    background-color: #0056b3;
+}
+
+#cancel-purchase {
+    background-color: #dc3545;
+}
+
+#cancel-purchase:hover {
+    background-color: #c82333;
+}
+
+#search-product {
+    background-color: #ffc107;
+}
+
+#search-product:hover {
+    background-color: #e0a800;
+}
+
+.barcode input {
+    padding: 8px;
+    margin-right: 10px;
+}
+/* Estilos existentes */
+
+.product-registration {
+    margin-bottom: 30px;
+}
+
+.product-registration input {
+    padding: 8px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    width: 150px;
+}
+
+.product-registration button {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.product-registration button:hover {
+    background-color: #0056b3;
+}
+/* Estilos existentes */
+
+/* Acompanhamento de compras */
+.purchase-tracking {
+    margin-bottom: 30px;
+    display: none;
+}
+
+.purchase-tracking ul {
+    list-style: none;
+    padding: 0;
+}
+
+.purchase-tracking li {
+    margin-bottom: 10px;
+}
+
+.purchase-tracking span {
+    font-weight: bold;
+}
+/* Estilos existentes */
+
+/* Formulário de Pagamento */
+.payment-form {
+    margin-top: 30px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.payment-form input,
+.payment-form select {
+    padding: 8px;
+    margin-bottom: 10px;
+    width: 200px;
+}
+
+.payment-form button {
+    padding: 8px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.payment-form button:hover {
+    background-color: #218838;
+}
+
+#payment-message {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+}
+
+[class*="registration"],[id*="form"]{
+    display: none;
+}
+
+.products{
+     display: none;
+}
+
+#search-product{
+    display: none;
+}
+
+section{
+    display: flex;
+    justify-content: center;
+}
+
+.barcode{
+    display: flex;
+    flex-wrap: wrap;
+    width: 400px;
+    justify-content: center;
+
+}
+.barcode>label{
+    min-width: 200px;
+}
+.barcode>input{
+    height: 10px;
+    width: 50px;
+}

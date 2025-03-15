@@ -2,7 +2,10 @@ const express = require('express');
 const path = require('path');
 const multer = require('multer');
 const {Pool,Client} = require('pg');
-const {printer,types} = require('node-thermal-printer')
+const { PDFDocument, StandardFonts, rgb } = require('pdf-lib');
+const fs = require('fs');
+const fontkit = require('fontkit')
+const { print } = require('pdf-to-printer');
 require('dotenv').config();
 
 
@@ -74,25 +77,77 @@ async function CriarTabela() {
     }
 }
 
+async function Imprimir(itens,total,troco) {
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([230,400]);
+    pdfDoc.registerFontkit(fontkit);
+    const fontPath = path.join(__dirname,'Courier','courier-1.ttf');
+    const fontBytes = fs.readFileSync(fontPath);
+    const font = await pdfDoc.embedFont(fontBytes);
+
+    const receiptContent = [
+        'MERCADO DO ZÉ',
+        '-----------------------------',
+        '',
+        'RECIBO DE COMPRA',
+        ''
+    ]
+    itens.forEach(item=>{
+        receiptContent.push(item)
+        receiptContent.push('-----------------------------')
+    })
+    receiptContent.push('')
+    receiptContent.push(total)
+    receiptContent.push('-----------------------------')
+    receiptContent.push(troco)
+
+    receiptContent.forEach((text,i)=>{
+        page.drawText(text, {
+            x: 10,
+            y: 380-(i*20),
+            size: 12,
+            font: font,
+            color: rgb(0, 0, 0),
+        });
+    })
+    
+    const pdfBytes = await pdfDoc.save();
+    fs.writeFileSync('Novo_Recibo.pdf',pdfBytes);
+    print(path.join(__dirname,'Novo_Recibo.pdf'));
+}
+   
+
+
+
 
 
 app.post('/cadastrar',tratalogin.none(),async (req,res)=>{
     try{
-        const {produto,preco,codigo} = req.body
+        const {nome,preco,codigo} = req.body
         await pool.query('INSERT INTO produto (nome,preco,codigo) VALUES($1,$2,$3);',
-            [produto,preco,codigo])
+            [nome,preco,codigo])
         console.log('Produto cadastrado com sucesso')
     }catch(erro){
         console.error(erro)
     }
 })
-
 app.get('/listar',async(req,res)=>{
     try{
         const consulta = await pool.query('SELECT * FROM produto;')
+        
         res.send(consulta)
     }catch(erro){
         console.error(erro)
+    }
+})
+app.post('/pagar',tratalogin.none(),(req,res)=>{
+    const {itens,total,troco} = req.body;
+    try{
+        Imprimir(itens,total,troco);
+        res.send('done')
+    }catch(err){
+        console.error(err)
+        res.send("não deu")
     }
 })
 
@@ -100,28 +155,9 @@ app.get('/listar',async(req,res)=>{
 CriaBanco()
 const pool = new Pool(dadosBd);
 CriarTabela();
-async function print() {
-    const impressao = new printer({
-        type:types.EPSON,
-        interface: 'tcp://192.168.70.252',
-        options:{
-            timeout:5000
-        }
-        
-    });
-
-    impressao.alignCenter();
-    impressao.println('qualquer coisa');
-    impressao.cut();
-    try{
-        await impressao.execute()
-        console.log('imprimido')
-    }catch(erro){
-        console.error(erro+"| | erro na impressão")
-    }
-}
 
 
-app.listen(3000,'0.0.0.0',()=>{
+
+app.listen(3000,'0.0.0.0',async ()=>{
     console.log('Conexão bem sucedida');
 });
