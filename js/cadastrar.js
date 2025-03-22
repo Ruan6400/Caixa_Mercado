@@ -7,11 +7,11 @@ function Cadastro(){
         const codigo = document.querySelector("#codigo").value
         const preco = document.querySelector("#preco").value
         if(nome == "" || codigo == "" || preco == ""){
-            alert("Preencha todos os campos!")
+            console.log("Preencha todos os campos!")
             form.reset()
         }else{
             if(/[^0-9]/.test(codigo)){
-                alert("Código inválido!")
+                console.log("Código inválido!")
                 form.reset()
             }else{
                 const url = new URL("http://localhost:3000/cadastrar");
@@ -22,9 +22,9 @@ function Cadastro(){
                     Preço: R$${preco}
                     Deseja cadastrar este produto?`)){
                     fetch(url,{method:'POST',body:formData}).then(
-                        alert('Produto cadastrado')
+                        console.log('Produto cadastrado')
                     ).catch(err=>{
-                        alert('erro')
+                        console.log('erro')
                         console.error(err)
                     })
                 }

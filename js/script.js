@@ -27,13 +27,20 @@ quantidade.addEventListener('change',()=>{if(quantidade.value<1){quantidade.valu
 
 // Função para carregar os produtos cadastrados ao inicializar a página
 async function loadProducts() {
-    const consulta = await fetch('http://localhost:3000/listar').then(resp=>resp.json())
-    products = consulta.rows
-    productListContainer.innerHTML = ''; // Limpar a lista de produtos antes de carregar
-    products.forEach(product => {
-        addProductToList(product); // Exibir cada produto na lista
-    });
-    
+        let consulta;
+        try{
+            consulta =  await fetch('http://localhost:3000/listar').then(resp=>resp.json())
+            products = consulta.rows
+            productListContainer.innerHTML = ''; // Limpar a lista de produtos antes de carregar
+            products.forEach(product => {
+                addProductToList(product); // Exibir cada produto na lista
+            });
+        }
+        catch(err){ 
+   
+            console.log(consulta)
+            console.error(err)
+        }
 }
 
 // Função para cadastrar um novo produto
@@ -53,16 +60,16 @@ productForm.addEventListener('submit', async(e) => {
         // addProductToList(newProduct); // Exibir o novo produto na lista de produtos
         const formData = new FormData(productForm)
         await fetch(url,{method:'POST',body:formData}).then(
-            alert('Produto cadastrado')
+            console.log('Produto cadastrado')
         ).catch(err=>{
-            alert('erro')
+            console.log('erro')
             console.error(err)
         })
         
 
         productForm.reset(); // Limpar os campos do formulário
     } else {
-        alert('Por favor, preencha todos os campos corretamente.');
+        console.log('Por favor, preencha todos os campos corretamente.');
     }
 });
 
@@ -145,7 +152,7 @@ checkoutButton.addEventListener('click', () => {
         const totalAmount = parseFloat(totalPriceContainer.textContent);
         paymentAmountInput.setAttribute('max', totalAmount); // Limitar o valor máximo ao total da compra
     } else {
-        alert('Carrinho vazio! Adicione produtos para finalizar a compra.');
+        console.log('Carrinho vazio! Adicione produtos para finalizar a compra.');
     }
 });
 
@@ -155,12 +162,12 @@ confirmPaymentButton.addEventListener('click',async () => {
     const totalAmount = parseFloat(totalPriceContainer.textContent);
 
     if (isNaN(paymentAmount) || paymentAmount <= 0) {
-        alert('Por favor, insira um valor válido para o pagamento.');
+        console.log('Por favor, insira um valor válido para o pagamento.');
         return;
     }
 
     if (paymentAmount < totalAmount) {
-        alert('O valor pago é insuficiente. Tente novamente.');
+        console.log('O valor pago é insuficiente. Tente novamente.');
     } else {
         let items = document.querySelectorAll('#cart-items>li')
         let nota_fiscal = document.createElement('form')
@@ -177,9 +184,9 @@ confirmPaymentButton.addEventListener('click',async () => {
 
 
         await fetch(url,{method:'POST',body:dados_nf}).then(
-            alert('Imprimindo nota fiscal')
+            console.log('Imprimindo nota fiscal')
         ).catch(err=>{
-            alert('erro')
+            console.log('erro')
             console.error(err)
         })
         paymentMessageContainer.style.display = 'block';
@@ -207,7 +214,7 @@ let escanear = () => {
 
     // Verifica se a busca está vazia
     if (searchQuery === '') {
-        //alert('Por favor, insira um código de barras ou nome do produto para buscar.');
+        //console.log('Por favor, insira um código de barras ou nome do produto para buscar.');
         return;
     }
 
@@ -238,6 +245,4 @@ function displaySearchResults(filteredProducts) {
 }
 
 // Carregar os produtos cadastrados quando a página for carregada
-window.onload = () => {
-    loadProducts();
-};
+document.addEventListener('DOMContentLoaded', loadProducts);

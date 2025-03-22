@@ -23,8 +23,6 @@ app.use((req,res,next)=>{
 	next();
 })
 
-
-
 //armazenamento de arquivos em buffer para enviar
 const modoDeArmazenamento = multer.memoryStorage();
 const upload = multer({storage:modoDeArmazenamento});
@@ -34,12 +32,13 @@ const tratalogin = multer();
 
 //dados do banco ocultos por segurança
 const dadosBd = {
-    user:process.env.DB_USER,
-    password:process.env.DB_PASSWORD,
-    database:process.env.DB_NAME,
-    port:process.env.DB_PORT,
-    host:process.env.DB_HOST
+    user:process.env.DB_USER||'postgres',
+    password:process.env.DB_PASSWORD||'root',
+    database:process.env.DB_NAME||'produtos',
+    port:process.env.DB_PORT||5432,
+    host:process.env.DB_HOST||'localhost'
 }
+const pool = new Pool(dadosBd);
 
 //Criação do banco de dados
 async function CriaBanco() {
@@ -112,8 +111,8 @@ async function Imprimir(itens,total,troco) {
     })
     
     const pdfBytes = await pdfDoc.save();
-    fs.writeFileSync('Novo_Recibo.pdf',pdfBytes);
-    print(path.join(__dirname,'Novo_Recibo.pdf'));
+    fs.writeFileSync(path.join(__dirname,'Novo_Recibo.pdf'),pdfBytes);
+    //print(path.join(__dirname,'Novo_Recibo.pdf'));
 }
    
 
@@ -127,7 +126,9 @@ app.post('/cadastrar',tratalogin.none(),async (req,res)=>{
         await pool.query('INSERT INTO produto (nome,preco,codigo) VALUES($1,$2,$3);',
             [nome,preco,codigo])
         console.log('Produto cadastrado com sucesso')
+        res.send('Produto cadastrado com sucesso')
     }catch(erro){
+        res.send('Erro ao cadastrar produto: '+erro)
         console.error(erro)
     }
 })
@@ -137,6 +138,7 @@ app.get('/listar',async(req,res)=>{
         
         res.send(consulta)
     }catch(erro){
+        res.send('Erro ao listar produtos: '+erro)
         console.error(erro)
     }
 })
@@ -152,9 +154,7 @@ app.post('/pagar',tratalogin.none(),(req,res)=>{
 })
 
 
-CriaBanco()
-const pool = new Pool(dadosBd);
-CriarTabela();
+CriaBanco().then(()=>CriarTabela());
 
 
 
