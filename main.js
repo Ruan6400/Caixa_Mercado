@@ -30,8 +30,8 @@ app.on('ready',()=>{
     StartServer().then(StartApp)
     
 })
-/*app.on('window-all-closed',()=>{
+app.on('window-all-closed',()=>{
     if(process.platform !== 'darwin'){
         app.quit()
     }
-})*/
+})
