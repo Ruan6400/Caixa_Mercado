@@ -38,6 +38,9 @@ const dadosBd = {
     port:process.env.DB_PORT||5432,
     host:process.env.DB_HOST||'localhost'
 }
+
+
+    
 const pool = new Pool(dadosBd);
 
 //Criação do banco de dados
@@ -76,9 +79,23 @@ async function CriarTabela() {
     }
 }
 
+function CorrigirValor(valor){
+    let numeral = valor.split('.')
+    numeral.forEach(num=>{num +=""})
+    if(numeral[1].length == 1){
+        numeral[1]+='0'
+    }else if(numeral[1].length == 0){
+        numeral[1]+='00'
+    }else if(numeral[1].length>2){
+        numeral[1] = numeral[1].slice(0,2)
+    }
+    let corrigido = numeral[0]+','+numeral[1]
+    return corrigido;
+}
+
 async function Imprimir(itens,total,troco) {
     const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([230,400]);
+    
     pdfDoc.registerFontkit(fontkit);
     const fontPath = path.join(__dirname,'Courier','courier-1.ttf');
     const fontBytes = fs.readFileSync(fontPath);
@@ -92,18 +109,37 @@ async function Imprimir(itens,total,troco) {
         ''
     ]
     itens.forEach(item=>{
-        receiptContent.push(item)
+        if(item.length>27){
+            let palavras = item.split(' ');
+            let linha1 = '';
+            let linha2 = '';
+            palavras.forEach(palavra=>{
+                if(linha1.length<27){
+                    linha1+=palavra+' ';
+                }else{
+                    linha2+=palavra+' ';
+                }
+            })
+            receiptContent.push(linha1)
+            receiptContent.push(linha2)
+        }else{
+            receiptContent.push(item)
+        }
         receiptContent.push('-----------------------------')
     })
     receiptContent.push('')
+    let total_corrigido = CorrigirValor(total.slice(10))
+    total = 'TOTAL: R$ '+total_corrigido
     receiptContent.push(total)
     receiptContent.push('-----------------------------')
+    let troco_corrigido = CorrigirValor(troco.slice(10))
+    troco = 'TROCO: R$ '+troco_corrigido
     receiptContent.push(troco)
-
+    const page = pdfDoc.addPage([230,22*receiptContent.length]);
     receiptContent.forEach((text,i)=>{
         page.drawText(text, {
             x: 10,
-            y: 380-(i*20),
+            y: (20*receiptContent.length)-(i*20),
             size: 12,
             font: font,
             color: rgb(0, 0, 0),
