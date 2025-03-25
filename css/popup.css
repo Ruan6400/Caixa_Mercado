@@ -1,0 +1,87 @@
+#darkscreen{
+    width: 100vw;
+    height: 100vh;
+    background-color: #000a;
+    position: absolute;
+    transition: opacity 0.5s;
+    opacity: 0;
+}
+
+#darkscreen>div{
+    width: 50vw;
+    height: 50vh;
+    background-color: #fff;
+    position: absolute;
+    top: 25vh;
+    left: 25vw;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    row-gap: 0;
+    position: relative;
+}
+
+#darkscreen p{
+    flex-basis: 100%;
+    text-align: center;
+    margin: 0 auto;
+}
+#darkscreen h2{
+    margin: 0 auto;
+    padding-left: 15px;
+    padding-bottom: 15px;
+    padding-top: 15px;
+    text-align: start;
+    flex-basis: 100%;
+    position: relative;
+    top: -40px;
+    background-color: #ddd;
+}
+#darkscreen button{
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    width: 100px;
+    border-radius: 5px;
+}
+#darkscreen button:first-of-type{
+    background-color: #28a745;
+}
+#darkscreen button:first-of-type:hover{
+    background-color: #218838;
+}
+
+
+#darkscreen button:nth-of-type(2){
+    background-color: #f44;
+}
+#darkscreen button:nth-of-type(2):hover{
+    background-color: #a22;
+}
+
+#Close{
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    color: #fff;
+    background-color: #f44;
+    user-select: none;
+    font-size: 20px;
+    z-index: 2;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 0 0 0;
+    border: none;
+    width: 40px;
+    height: 40px;
+}
+#Close:hover{
+    background-color: #a22;
+}

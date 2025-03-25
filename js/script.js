@@ -23,7 +23,38 @@ const paymentMessageContainer = document.getElementById('payment-message');
 const messageText = document.getElementById('message-text');
 const quantidade = document.getElementById('quantidade');
 
+let rep_alert = false;
+
+document.getElementById('Close').addEventListener('click',()=>{
+    window.close()
+}) 
+
 quantidade.addEventListener('change',()=>{if(quantidade.value<1){quantidade.value=1}})
+let mensagem = localStorage.getItem('PGTO')
+if(mensagem&&mensagem == 'Pagamento efetuado'){alertar('Mensagem','Pagamento efetuado com sucesso!')}
+localStorage.removeItem('PGTO')
+
+function alertar(titulo="Alerta",mensagem,opcional=false){
+    document.body.insertAdjacentHTML('beforeend',`
+        <div id="darkscreen">
+            <div>
+                <h2>${titulo}</h2>
+                <p>${mensagem}</p>
+                <button>Ok</button>
+                ${opcional?'<button>Cancelar</button>':''}
+            </div>
+        </div>
+        `)
+    document.querySelector('#darkscreen>div>button').addEventListener('click',()=>{
+        document.getElementById('darkscreen').remove()
+        rep_alert = true
+    })
+    if(opcional){document.querySelector('#darkscreen>div>button:nth-of-type(2)').addEventListener('click',()=>{
+        document.getElementById('darkscreen').remove()
+        rep_alert = false
+    })}
+    setTimeout(()=>{document.getElementById('darkscreen').style.opacity=1},100)
+}
 
 // Função para carregar os produtos cadastrados ao inicializar a página
 async function loadProducts() {
@@ -37,8 +68,7 @@ async function loadProducts() {
             });
         }
         catch(err){ 
-   
-            console.log(consulta)
+            alertar('Erro','Erro ao carregar produtos <br><br>'+err)
             console.error(err)
         }
 }
@@ -139,10 +169,13 @@ function removeItemFromCart(index) {
 
 // Função para cancelar a compra
 cancelPurchaseButton.addEventListener('click', () => {
-    if (confirm('Tem certeza que deseja cancelar toda a compra?')) {
+    alertar('Alerta','Tem certeza que deseja cancelar toda a compra?',true)
+    document.querySelector('#darkscreen button:first-of-type').addEventListener('click',()=>{
         cart = [];
         updateCart();
-    }
+        alertar('Mensagem','Compra cancelada com sucesso!')
+    })
+
 });
 
 // Exibir formulário de pagamento ao finalizar compra
@@ -153,21 +186,26 @@ checkoutButton.addEventListener('click', () => {
         paymentAmountInput.setAttribute('max', totalAmount); // Limitar o valor máximo ao total da compra
     } else {
         console.log('Carrinho vazio! Adicione produtos para finalizar a compra.');
+        alertar('Alerta','Carrinho vazio! Adicione produtos para finalizar a compra.')
     }
 });
 
 // Confirmar o pagamento
-confirmPaymentButton.addEventListener('click',async () => {
+confirmPaymentButton.addEventListener('click',async (e) => {
+    e.preventDefault()
     const paymentAmount = parseFloat(paymentAmountInput.value);
     const totalAmount = parseFloat(totalPriceContainer.textContent);
 
     if (isNaN(paymentAmount) || paymentAmount <= 0) {
         console.log('Por favor, insira um valor válido para o pagamento.');
+        alertar('Alerta','Por favor, insira um valor válido para o pagamento.')
         return;
     }
 
     if (paymentAmount < totalAmount) {
         console.log('O valor pago é insuficiente. Tente novamente.');
+        alertar('Alerta','O valor pago é insuficiente. Tente novamente.')
+        
     } else {
         let items = document.querySelectorAll('#cart-items>li')
         let nota_fiscal = document.createElement('form')
@@ -181,21 +219,19 @@ confirmPaymentButton.addEventListener('click',async () => {
 
         const url = new URL("http://localhost:3000/pagar")
         const dados_nf = new FormData(nota_fiscal)
-
-
-        await fetch(url,{method:'POST',body:dados_nf}).then(
-            console.log('Imprimindo nota fiscal')
-        ).catch(err=>{
-            console.log('erro')
+        try{
+            fetch(url,{method:'POST',body:dados_nf})
+            alertar('Mensagem','Pagamento recebido com sucesso! <br>Troco: R$ '+change.toFixed(2))
+            cart = [];
+            updateCart();
+            paymentForm.style.display = 'none';
+        }
+        catch(err){
             console.error(err)
-        })
-        paymentMessageContainer.style.display = 'block';
-        messageText.textContent = `Pagamento recebido com sucesso! Troco: R$ ${change.toFixed(2)}`;
-        
-        // Limpar carrinho após o pagamento
-        cart = [];
-        updateCart();
-        paymentForm.style.display = 'none'; // Esconder o formulário de pagamento
+            alertar('Erro','Erro ao efetuar pagamento <br><br>'+err)
+        }
+        //
+    
     }
 });
 
@@ -219,8 +255,7 @@ let escanear = () => {
     }
 
     // Filtra os produtos que correspondem ao código de barras ou nome (case insensitive)
-    const filteredProducts = products.filter(product => 
-        product.nome.toLowerCase().includes(searchQuery) || 
+    const filteredProducts = products.filter(product =>  
         product.codigo == searchQuery
     );
 

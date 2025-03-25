@@ -182,7 +182,7 @@ app.post('/pagar',tratalogin.none(),(req,res)=>{
     const {itens,total,troco} = req.body;
     try{
         Imprimir(itens,total,troco);
-        res.send('done')
+        res.send('Recibo gerado com sucesso');
     }catch(err){
         console.error(err)
         res.send("não deu")

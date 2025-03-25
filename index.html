@@ -5,8 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de PDV</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/popup.css">
 </head>
 <body>
+    <!--<div id="darkscreen">
+        <div>
+            <h2>Alerta</h2>
+            <p>Um texto qualquer</p>
+            <button>Ok</button>
+            <button>Ok</button>
+        </div>
+    </div>-->
+    <button id="Close">X</button>
     <div class="container">
         <h1>Sistema de PDV</h1>
     </div>
@@ -18,7 +28,7 @@
 
     <!-- Formulário de Cadastro de Produto -->
     <form id="product-form">
-        <label for="product-name">Nome do Produto:</label>
+        <label for="produto">Nome do Produto:</label>
         <input type="text" id="product-name" name="produto" required>
         
         <label for="product-price">Preço:</label>
@@ -80,15 +90,15 @@
         <h2>Forma de Pagamento</h2>
         <!-- Seletor de Forma de Pagamento -->
         <label for="payment-method">Forma de Pagamento:</label>
-        <select id="payment-method">
+        <select id="payment-method" name="payment-method">
             <option value="credit-card">Cartão de Crédito</option>
             <option value="debit-card">Cartão de Débito</option>
             <option value="pix">PIX</option> <!-- Opção PIX para pagamento -->
         </select>
 
         <label for="payment-amount">Valor Pago (R$):</label>
-        <input type="number" id="payment-amount" placeholder="Digite o valor pago" required>
-        <button id="confirm-payment">Confirmar Pagamento</button>
+        <input type="number" name="payment-amount" id="payment-amount" placeholder="Digite o valor pago" required>
+        <button type="button" id="confirm-payment">Confirmar Pagamento</button>
         <button id="cancel-payment">Cancelar</button>
     </div>
 
